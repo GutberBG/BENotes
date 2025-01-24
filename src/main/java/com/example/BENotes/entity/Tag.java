@@ -20,6 +20,8 @@ public class Tag {
 
     private String name;
 
+    private boolean deleted = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"tags", "notes"})
     private User user;

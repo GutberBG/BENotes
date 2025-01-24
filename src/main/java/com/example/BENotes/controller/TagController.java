@@ -24,6 +24,11 @@ public class TagController {
         return tagService.getAllTags();
     }
 
+    @GetMapping("/user/{userId}")
+    public List<Tag> getTagsByUser(@PathVariable Long userId) {
+        return tagService.getTagsByUser(userId);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteTag(@PathVariable Long id) {
         tagService.deleteTag(id);

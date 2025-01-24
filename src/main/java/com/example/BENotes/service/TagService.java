@@ -33,7 +33,16 @@ public class TagService {
         return tagRepository.findAll();
     }
 
+    public List<Tag> getTagsByUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return tagRepository.findByUserAndDeletedFalse(user);
+    }
+
     public void deleteTag(Long id) {
-        tagRepository.deleteById(id);
+        Tag tag = tagRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tag not found"));
+        tag.setDeleted(true); // Marcar la etiqueta como eliminada
+        tagRepository.save(tag);
     }
 }
