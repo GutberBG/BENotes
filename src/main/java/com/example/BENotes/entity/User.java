@@ -29,4 +29,5 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonIgnoreProperties("user")
     private Set<Tag> tags;
+
 }
