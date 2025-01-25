@@ -1,8 +1,10 @@
 package com.example.BENotes.controller;
 
+import com.example.BENotes.dto.TagDTO;
 import com.example.BENotes.entity.Tag;
 import com.example.BENotes.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,13 +22,13 @@ public class TagController {
     }
 
     @GetMapping
-    public List<Tag> getAllTags() {
-        return tagService.getAllTags();
+    public ResponseEntity<List<TagDTO>> getAllTags() {
+        return ResponseEntity.ok(tagService.getAllTags());
     }
 
     @GetMapping("/user/{userId}")
-    public List<Tag> getTagsByUser(@PathVariable Long userId) {
-        return tagService.getTagsByUser(userId);
+    public ResponseEntity<List<TagDTO>> getTagsByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(tagService.getTagsByUser(userId));
     }
 
     @DeleteMapping("/{id}")

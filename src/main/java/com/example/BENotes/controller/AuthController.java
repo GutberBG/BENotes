@@ -27,4 +27,10 @@ public class AuthController {
         User newUser = userService.registerUser(user);
         return ResponseEntity.ok(newUser);
     }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        User user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
+    }
 }
