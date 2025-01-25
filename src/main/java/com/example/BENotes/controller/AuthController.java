@@ -1,5 +1,7 @@
 package com.example.BENotes.controller;
 
+import com.example.BENotes.dto.UserDTO;
+import com.example.BENotes.dto.UserMapper;
 import com.example.BENotes.entity.User;
 import com.example.BENotes.service.AuthService;
 import com.example.BENotes.service.UserService;
@@ -29,8 +31,9 @@ public class AuthController {
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
         User user = userService.getUserById(id);
-        return ResponseEntity.ok(user);
+        UserDTO userDTO = UserMapper.toUserDTO(user);
+        return ResponseEntity.ok(userDTO);
     }
 }
