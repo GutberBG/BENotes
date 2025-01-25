@@ -18,12 +18,10 @@ public class UserService {
 
     // Método para registrar un nuevo usuario
     public User registerUser(User user) {
-        // Validación: Verificar si el nombre de usuario ya existe
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new RuntimeException("Username is already taken");
         }
 
-        // Validación: Verificar si el correo electrónico ya existe
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("Email is already registered");
         }
@@ -31,7 +29,6 @@ public class UserService {
         // Encriptar la contraseña antes de guardarla
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        // Guardar el nuevo usuario
         return userRepository.save(user);
     }
 

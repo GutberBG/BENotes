@@ -13,7 +13,7 @@ public class TagMapper {
         // Mapear IDs de notas asociadas
         if (tag.getNotes() != null) {
             dto.setNotes(tag.getNotes().stream()
-                    .map(note -> note.getId()) // Supone que Note tiene un método `getId()`
+                    .map(note -> note.getId())
                     .collect(Collectors.toList()));
         }
         return dto;

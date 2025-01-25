@@ -49,7 +49,6 @@ public class TagService {
                 .filter(tag -> !tag.isDeleted()) // Filtrar etiquetas no eliminadas
                 .map(tag -> {
                     TagDTO tagDTO = TagMapper.toTagDTO(tag);
-                    // Filtra las notas por usuario y añade solo los IDs de las que correspondan
                     tagDTO.setNotes(tag.getNotes().stream()
                             .filter(note -> note.getUser().getId().equals(userId))
                             .map(note -> note.getId())

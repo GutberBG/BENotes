@@ -19,11 +19,11 @@ public class SearchState {
 
     private String query; // Término de búsqueda
 
-    private String sortBy; // Campo de ordenamiento
+    private String sortBy;
 
-    private String order; // Dirección de ordenamiento (asc, desc)
+    private String order;
 
-    private boolean archived; // Filtro de notas archivadas
+    private boolean archived;
 
     private boolean deleted;
 

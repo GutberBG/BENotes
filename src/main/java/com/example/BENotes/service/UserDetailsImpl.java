@@ -37,5 +37,4 @@ public class UserDetailsImpl implements UserDetails {
         return username;
     }
 
-    // Otros métodos de UserDetails (como isAccountNonExpired, isCredentialsNonExpired, etc.)
 }

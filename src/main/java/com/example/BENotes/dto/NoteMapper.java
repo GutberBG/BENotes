@@ -24,7 +24,7 @@ public class NoteMapper {
         // Mapear tags
         if (note.getTags() != null) {
             dto.setTags(note.getTags().stream()
-                    .map(tag -> tag.getName()) // Supone que `Tag` tiene un método `getName()`
+                    .map(tag -> tag.getName())
                     .collect(Collectors.toSet()));
         }
         return dto;

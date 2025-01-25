@@ -40,12 +40,10 @@ public class NoteService {
     public NoteDTO createNote(NoteDTO noteDTO) {
         Note note = new Note();
 
-        // Asignar usuario
         User user = userRepository.findById(noteDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         note.setUser(user);
 
-        // Asignar tags
         Set<Tag> tags = noteDTO.getTags().stream()
                 .map(tagName -> {
                     Tag existingTag = tagRepository.findByName(tagName).orElse(null);
@@ -65,7 +63,6 @@ public class NoteService {
                 .collect(Collectors.toSet());
         note.setTags(tags);
 
-        // Asignar otros campos
         note.setTitle(noteDTO.getTitle());
         note.setContent(noteDTO.getContent());
         note.setArchived(noteDTO.isArchived());
@@ -73,7 +70,6 @@ public class NoteService {
 
         Note savedNote = noteRepository.save(note);
 
-        // Convertir a DTO y devolver
         return convertToDTO(savedNote);
     }
 
@@ -115,7 +111,6 @@ public class NoteService {
             notes = noteRepository.findByUserIdAndDeletedFalse(userId, sort);
         }
 
-        // Convertir las notas a DTO
         return notes.stream()
                 .map(NoteMapper::toNoteDTO)
                 .collect(Collectors.toList());
@@ -127,19 +122,18 @@ public class NoteService {
 
         // Crear un nuevo estado de búsqueda
         SearchState searchState = new SearchState();
-        searchState.setUser(user); // Asignar el usuario
-        searchState.setQuery(query); // Establecer el término de búsqueda
-        searchState.setSortBy(sortBy); // Establecer el campo de ordenamiento
-        searchState.setOrder(order); // Establecer la dirección de ordenamiento
-        searchState.setArchived(archived); // Filtro de archivado
-        searchState.setDeleted(deleted); // Filtro de eliminado
+        searchState.setUser(user);
+        searchState.setQuery(query);
+        searchState.setSortBy(sortBy);
+        searchState.setOrder(order);
+        searchState.setArchived(archived);
+        searchState.setDeleted(deleted);
 
-        // Guardar el nuevo estado de búsqueda
         searchStateRepository.save(searchState);
     }
 
     public List<SearchState> getSearchStates(Long userId, int limit) {
-        Pageable pageable = PageRequest.of(0, limit); // Página 0, tamaño 'limit'
+        Pageable pageable = PageRequest.of(0, limit);
         return searchStateRepository.findRecentSearchStates(userId, pageable);
     }
 
@@ -152,7 +146,6 @@ public class NoteService {
         User user = userRepository.findById(noteDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Actualizar campos de la nota
         existingNote.setTitle(noteDTO.getTitle());
         existingNote.setContent(noteDTO.getContent());
         existingNote.setArchived(noteDTO.isArchived());
@@ -180,13 +173,11 @@ public class NoteService {
 
         // Eliminar relaciones de etiquetas no incluidas
         existingNote.getTags().removeIf(tag -> !updatedTags.contains(tag));
-        // Actualizar etiquetas
+
         existingNote.setTags(updatedTags);
 
-        // Guardar cambios en la nota
         Note updatedNote = noteRepository.save(existingNote);
 
-        // Convertir a DTO y devolver
         return convertToDTO(updatedNote);
     }
 

@@ -14,13 +14,12 @@ public class AuthService {
     private UserRepository userRepository;
 
     @Autowired
-    private JwtUtils jwtUtils; // Inyectamos JwtUtils
+    private JwtUtils jwtUtils;
 
     @Autowired
-    private PasswordEncoder passwordEncoder; // Inyectamos el PasswordEncoder
+    private PasswordEncoder passwordEncoder;
 
     public String login(String username, String password) {
-        // Buscar al usuario en la base de datos
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
