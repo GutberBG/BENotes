@@ -87,10 +87,50 @@ public class NoteService {
     }
 
     public NoteDTO updateNote(Long id, NoteDTO noteDTO) {
-        Note note = NoteMapper.toEntity(noteDTO);
-        note.setId(id);
-        Note updatedNote = noteRepository.save(note);
-        return NoteMapper.toNoteDTO(updatedNote);
+        // Buscar la nota existente
+        Note existingNote = noteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Note not found"));
+
+        // Verificar y asignar usuario
+        User user = userRepository.findById(noteDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Actualizar campos de la nota
+        existingNote.setTitle(noteDTO.getTitle());
+        existingNote.setContent(noteDTO.getContent());
+        existingNote.setArchived(noteDTO.isArchived());
+        existingNote.setDeleted(noteDTO.isDeleted());
+        existingNote.setUser(user);
+
+        // Gestionar etiquetas
+        Set<Tag> updatedTags = noteDTO.getTags().stream()
+                .map(tagName -> {
+                    Tag existingTag = tagRepository.findByName(tagName).orElse(null);
+                    if (existingTag != null) {
+                        // Validar que la etiqueta pertenece al usuario
+                        if (!existingTag.getUser().getId().equals(user.getId())) {
+                            throw new RuntimeException("Tag belongs to a different user");
+                        }
+                        return existingTag;
+                    }
+                    // Crear una nueva etiqueta si no existe
+                    Tag newTag = new Tag();
+                    newTag.setName(tagName);
+                    newTag.setUser(user);
+                    return tagRepository.save(newTag);
+                })
+                .collect(Collectors.toSet());
+
+        // Eliminar relaciones de etiquetas no incluidas
+        existingNote.getTags().removeIf(tag -> !updatedTags.contains(tag));
+        // Actualizar etiquetas
+        existingNote.setTags(updatedTags);
+
+        // Guardar cambios en la nota
+        Note updatedNote = noteRepository.save(existingNote);
+
+        // Convertir a DTO y devolver
+        return convertToDTO(updatedNote);
     }
 
     public void deleteNote(Long id) {
