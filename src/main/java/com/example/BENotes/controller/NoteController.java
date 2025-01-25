@@ -36,6 +36,10 @@ public class NoteController {
         return ResponseEntity.ok(noteService.getAllNotesByUser(userId));
     }
 
+    @GetMapping("/user/{userId}/archived")
+    public List<NoteDTO> getUserArchivedNotes(@PathVariable Long userId, @RequestParam boolean archived) {
+        return noteService.getNotesByUserAndArchivedStatus(userId, archived);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<NoteDTO> updateNote(@PathVariable Long id, @RequestBody NoteDTO noteDTO) {

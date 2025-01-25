@@ -80,6 +80,12 @@ public class NoteService {
                 .collect(Collectors.toList());
     }
 
+    public List<NoteDTO> getNotesByUserAndArchivedStatus(Long userId, boolean archived) {
+        return noteRepository.findByUserIdAndArchivedAndDeletedFalse(userId, archived).stream()
+                .map(NoteMapper::toNoteDTO)
+                .collect(Collectors.toList());
+    }
+
     public NoteDTO getNoteById(Long id) {
         return noteRepository.findById(id)
                 .map(NoteMapper::toNoteDTO)
