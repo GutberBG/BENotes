@@ -10,6 +10,7 @@ import com.example.BENotes.repository.NoteRepository;
 import com.example.BENotes.repository.TagRepository;
 import com.example.BENotes.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -90,6 +91,27 @@ public class NoteService {
         return noteRepository.findById(id)
                 .map(NoteMapper::toNoteDTO)
                 .orElse(null);
+    }
+
+    public List<NoteDTO> searchNotes(Long userId, String query, String sortBy, String order) {
+        Sort sort = Sort.by(order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
+
+        List<Note> notes;
+
+        if (query != null && !query.isBlank()) {
+            // Buscar por título, contenido o etiquetas
+            notes = noteRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCaseOrTagsNameContainingIgnoreCaseAndUserIdAndDeletedFalse(
+                    query, query, query, userId
+            );
+        } else {
+            // Obtener todas las notas del usuario con ordenamiento
+            notes = noteRepository.findByUserIdAndDeletedFalse(userId, sort);
+        }
+
+        // Convertir las notas a DTO
+        return notes.stream()
+                .map(NoteMapper::toNoteDTO)
+                .collect(Collectors.toList());
     }
 
     public NoteDTO updateNote(Long id, NoteDTO noteDTO) {

@@ -41,6 +41,17 @@ public class NoteController {
         return noteService.getNotesByUserAndArchivedStatus(userId, archived);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<NoteDTO>> searchNotes(
+            @RequestParam Long userId,
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "title") String sortBy,
+            @RequestParam(defaultValue = "asc") String order
+    ) {
+        List<NoteDTO> notes = noteService.searchNotes(userId, query, sortBy, order);
+        return ResponseEntity.ok(notes);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<NoteDTO> updateNote(@PathVariable Long id, @RequestBody NoteDTO noteDTO) {
         return ResponseEntity.ok(noteService.updateNote(id, noteDTO));
