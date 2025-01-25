@@ -1,13 +1,16 @@
 package com.example.BENotes.controller;
 
 import com.example.BENotes.dto.NoteDTO;
+import com.example.BENotes.dto.SearchStateDTO;
 import com.example.BENotes.entity.Note;
+import com.example.BENotes.entity.SearchState;
 import com.example.BENotes.service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/notes")
@@ -48,8 +51,33 @@ public class NoteController {
             @RequestParam(defaultValue = "title") String sortBy,
             @RequestParam(defaultValue = "asc") String order
     ) {
+        // Guardar el estado de la búsqueda
+        noteService.saveSearchState(userId, query, sortBy, order, false, false);
         List<NoteDTO> notes = noteService.searchNotes(userId, query, sortBy, order);
         return ResponseEntity.ok(notes);
+    }
+
+    @GetMapping("/search/state")
+    public ResponseEntity<List<SearchStateDTO>> getSearchState(
+            @RequestParam Long userId,
+            @RequestParam(defaultValue = "5") int limit) {  // Default to 5
+        List<SearchState> searchStates = noteService.getSearchStates(userId, limit);
+
+        // Convertir SearchState a SearchStateDTO
+        List<SearchStateDTO> response = searchStates.stream()
+                .map(state -> new SearchStateDTO(
+                        state.getId(),
+                        state.getUser().getId(),  // Solo el ID del usuario
+                        state.getQuery(),
+                        state.getSortBy(),
+                        state.getOrder(),
+                        state.isArchived(),
+                        state.isDeleted(),
+                        state.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")

@@ -4,12 +4,16 @@ package com.example.BENotes.service;
 import com.example.BENotes.dto.NoteDTO;
 import com.example.BENotes.dto.NoteMapper;
 import com.example.BENotes.entity.Note;
+import com.example.BENotes.entity.SearchState;
 import com.example.BENotes.entity.Tag;
 import com.example.BENotes.entity.User;
 import com.example.BENotes.repository.NoteRepository;
+import com.example.BENotes.repository.SearchStateRepository;
 import com.example.BENotes.repository.TagRepository;
 import com.example.BENotes.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +33,9 @@ public class NoteService {
 
     @Autowired
     private TagRepository tagRepository;
+
+    @Autowired
+    private SearchStateRepository searchStateRepository;
 
     public NoteDTO createNote(NoteDTO noteDTO) {
         Note note = new Note();
@@ -112,6 +119,28 @@ public class NoteService {
         return notes.stream()
                 .map(NoteMapper::toNoteDTO)
                 .collect(Collectors.toList());
+    }
+
+    public void saveSearchState(Long userId, String query, String sortBy, String order, boolean archived, boolean deleted) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Crear un nuevo estado de búsqueda
+        SearchState searchState = new SearchState();
+        searchState.setUser(user); // Asignar el usuario
+        searchState.setQuery(query); // Establecer el término de búsqueda
+        searchState.setSortBy(sortBy); // Establecer el campo de ordenamiento
+        searchState.setOrder(order); // Establecer la dirección de ordenamiento
+        searchState.setArchived(archived); // Filtro de archivado
+        searchState.setDeleted(deleted); // Filtro de eliminado
+
+        // Guardar el nuevo estado de búsqueda
+        searchStateRepository.save(searchState);
+    }
+
+    public List<SearchState> getSearchStates(Long userId, int limit) {
+        Pageable pageable = PageRequest.of(0, limit); // Página 0, tamaño 'limit'
+        return searchStateRepository.findRecentSearchStates(userId, pageable);
     }
 
     public NoteDTO updateNote(Long id, NoteDTO noteDTO) {
