@@ -38,38 +38,55 @@ public class NoteService {
     private SearchStateRepository searchStateRepository;
 
     public NoteDTO createNote(NoteDTO noteDTO) {
+        // Crear la nota
         Note note = new Note();
 
+        // Buscar al usuario por ID
         User user = userRepository.findById(noteDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         note.setUser(user);
 
+        // Procesar las etiquetas
         Set<Tag> tags = noteDTO.getTags().stream()
                 .map(tagName -> {
+                    // Buscar si la etiqueta ya existe
                     Tag existingTag = tagRepository.findByName(tagName).orElse(null);
-                    if (existingTag != null) {
-                        // Validar si el tag pertenece al usuario
-                        if (!existingTag.getUser().getId().equals(user.getId())) {
-                            throw new RuntimeException("Tag belongs to a different user");
-                        }
-                        return existingTag;
+
+                    // Si la etiqueta existe pero no pertenece al usuario, crear una nueva
+                    if (existingTag != null && !existingTag.getUser().getId().equals(user.getId())) {
+                        // Crear una nueva etiqueta asociada al usuario actual
+                        Tag newTag = new Tag();
+                        newTag.setName(tagName);
+                        newTag.setUser(user);
+                        return tagRepository.save(newTag);
                     }
-                    // Crear un nuevo tag si no existe
-                    Tag newTag = new Tag();
-                    newTag.setName(tagName);
-                    newTag.setUser(user);
-                    return tagRepository.save(newTag);
+
+                    // Si la etiqueta no existe, crear una nueva y asociarla al usuario
+                    if (existingTag == null) {
+                        Tag newTag = new Tag();
+                        newTag.setName(tagName);
+                        newTag.setUser(user);
+                        return tagRepository.save(newTag);
+                    }
+
+                    // Si la etiqueta existe y pertenece al usuario, devolverla
+                    return existingTag;
                 })
                 .collect(Collectors.toSet());
+
+        // Asignar las etiquetas a la nota
         note.setTags(tags);
 
+        // Asignar otros atributos de la nota
         note.setTitle(noteDTO.getTitle());
         note.setContent(noteDTO.getContent());
         note.setArchived(noteDTO.isArchived());
         note.setDeleted(noteDTO.isDeleted());
 
+        // Guardar la nota en el repositorio
         Note savedNote = noteRepository.save(note);
 
+        // Convertir la nota guardada a DTO y devolverla
         return convertToDTO(savedNote);
     }
 

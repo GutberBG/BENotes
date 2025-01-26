@@ -36,6 +36,7 @@ public class NoteController {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<NoteDTO>> getNotesByUser(@PathVariable Long userId) {
+
         return ResponseEntity.ok(noteService.getAllNotesByUser(userId));
     }
 

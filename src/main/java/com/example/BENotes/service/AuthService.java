@@ -1,5 +1,6 @@
 package com.example.BENotes.service;
 
+import com.example.BENotes.dto.AuthResponse;
 import com.example.BENotes.entity.User;
 import com.example.BENotes.repository.UserRepository;
 import com.example.BENotes.util.JwtUtils;
@@ -19,14 +20,17 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public String login(String username, String password) {
+    public AuthResponse login(String username, String password) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
         // Verificar la contraseña encriptada
         if (passwordEncoder.matches(password, user.getPassword())) {
             // Generar el JWT
-            return jwtUtils.generateJwtToken(user);
+            String token = jwtUtils.generateJwtToken(user);
+
+            // Crear un objeto con el token y el id del usuario
+            return new AuthResponse(token, user.getId());
         }
 
         throw new RuntimeException("Invalid credentials");

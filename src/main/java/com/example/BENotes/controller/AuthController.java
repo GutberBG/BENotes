@@ -2,6 +2,8 @@ package com.example.BENotes.controller;
 
 import com.example.BENotes.dto.UserDTO;
 import com.example.BENotes.dto.UserMapper;
+import com.example.BENotes.dto.AuthResponse;
+
 import com.example.BENotes.entity.User;
 import com.example.BENotes.service.AuthService;
 import com.example.BENotes.service.UserService;
@@ -20,7 +22,7 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/login")
-    public String login(@RequestParam String username, @RequestParam String password) {
+    public AuthResponse login(@RequestParam String username, @RequestParam String password) {
         return authService.login(username, password);
     }
 

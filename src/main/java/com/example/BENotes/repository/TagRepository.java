@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface TagRepository extends JpaRepository<Tag, Long> {
     List<Tag> findByUserAndDeletedFalse(User user);
     Optional<Tag> findByName(String name);
+    List<Tag> findByUserIdAndDeletedFalse(Long userId);
 }

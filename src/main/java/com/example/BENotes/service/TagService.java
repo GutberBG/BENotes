@@ -44,11 +44,14 @@ public class TagService {
             throw new IllegalArgumentException("El usuario con ID " + userId + " no existe.");
         }
 
-        // Obtén todas las etiquetas cuyo campo 'deleted' sea false y procesa las notas asociadas
-        return tagRepository.findAll().stream()
-                .filter(tag -> !tag.isDeleted()) // Filtrar etiquetas no eliminadas
+        // Obtén las etiquetas del usuario específico que no estén eliminadas
+        List<Tag> tags = tagRepository.findByUserIdAndDeletedFalse(userId);
+
+        // Procesa las etiquetas y las notas asociadas
+        return tags.stream()
                 .map(tag -> {
                     TagDTO tagDTO = TagMapper.toTagDTO(tag);
+                    // Filtra las notas para solo incluir las del usuario actual
                     tagDTO.setNotes(tag.getNotes().stream()
                             .filter(note -> note.getUser().getId().equals(userId))
                             .map(note -> note.getId())
