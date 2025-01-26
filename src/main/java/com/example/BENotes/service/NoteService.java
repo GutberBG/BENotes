@@ -119,10 +119,8 @@ public class NoteService {
         List<Note> notes;
 
         if (query != null && !query.isBlank()) {
-            // Buscar por título, contenido o etiquetas
-            notes = noteRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCaseOrTagsNameContainingIgnoreCaseAndUserIdAndDeletedFalse(
-                    query, query, query, userId
-            );
+            // Llamar a la consulta personalizada con el query y userId
+            notes = noteRepository.searchNotes(query, userId, sort);
         } else {
             // Obtener todas las notas del usuario con ordenamiento
             notes = noteRepository.findByUserIdAndDeletedFalse(userId, sort);
@@ -172,7 +170,7 @@ public class NoteService {
         // Gestionar etiquetas
         Set<Tag> updatedTags = noteDTO.getTags().stream()
                 .map(tagName -> {
-                    Tag existingTag = tagRepository.findByName(tagName).orElse(null);
+                    Tag existingTag = tagRepository.findByNameAndUserId(tagName, user.getId()).orElse(null);
                     if (existingTag != null) {
                         // Validar que la etiqueta pertenece al usuario
                         if (!existingTag.getUser().getId().equals(user.getId())) {

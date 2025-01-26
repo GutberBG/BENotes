@@ -11,4 +11,5 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
     List<Tag> findByUserAndDeletedFalse(User user);
     Optional<Tag> findByName(String name);
     List<Tag> findByUserIdAndDeletedFalse(Long userId);
+    Optional<Tag> findByNameAndUserId(String name, Long userId);
 }
