@@ -15,7 +15,7 @@ Esta es una API para la gestión de notas, etiquetas y usuarios. Proporciona fun
 
     Primero, clona el repositorio del proyecto en tu máquina local:
     ```
-    git clone https://github.com/GutberBG/BackendPruebaUnion.git
+    https://github.com/GutberBG/BENotes.git
     cd nombre-del-repositorio
 
 2.  **Base de datos:**
