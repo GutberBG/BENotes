@@ -50,7 +50,7 @@ public class NoteService {
         Set<Tag> tags = noteDTO.getTags().stream()
                 .map(tagName -> {
                     // Buscar si la etiqueta ya existe
-                    Tag existingTag = tagRepository.findByName(tagName).orElse(null);
+                    Tag existingTag = tagRepository.findByNameAndUserId(tagName, user.getId()).orElse(null);
 
                     // Si la etiqueta existe pero no pertenece al usuario, crear una nueva
                     if (existingTag != null && !existingTag.getUser().getId().equals(user.getId())) {
